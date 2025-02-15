@@ -5,6 +5,7 @@ const nextConfig = {
       unoptimized: true,
   },
   basePath: '/formular',
+  trailingSlash: true,
 }
 
 module.exports = nextConfig
