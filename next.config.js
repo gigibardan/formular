@@ -6,6 +6,7 @@ const nextConfig = {
   },
   basePath: '/formular',
   trailingSlash: true,
+  distDir: 'dist',
 }
 
 module.exports = nextConfig
