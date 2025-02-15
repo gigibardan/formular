@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 
 export default function FormularInscriere() {
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     // Date copil
     numeCopil: '',
@@ -33,10 +34,43 @@ export default function FormularInscriere() {
     { id: 'stem', nume: 'STEM', emoji: '🔬', culoare: 'from-green-500 to-green-700' }
   ]
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log(formData)
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      if (!response.ok) throw new Error('Failed to submit');
+  
+      setIsSubmitted(true);
+      setFormData({
+        numeCopil: '',
+        prenumeCopil: '',
+        dataNasterii: '',
+        varstaCopil: '',
+        numeParinte: '',
+        prenumeParinte: '',
+        telefon: '',
+        email: '',
+        adresa: '',
+        localitate: '',
+        judet: '',
+        cnpParinte: '',
+        serieCI: '',
+        numarCI: '',
+        cursuri: [],
+        experienta: ''
+      });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('A apărut o eroare. Vă rugăm încercați din nou.');
+    }
+  };
 
   const toggleCurs = (cursId: string) => {
     setFormData(prev => ({
@@ -44,48 +78,89 @@ export default function FormularInscriere() {
       cursuri: prev.cursuri.includes(cursId) 
         ? prev.cursuri.filter(id => id !== cursId)
         : [...prev.cursuri, cursId]
-    }))
-  }
+    }));
+  };
 
+  // Pagina de succes
+  if (isSubmitted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-purple-50">
+        <div className="text-center p-8 bg-white rounded-2xl shadow-xl max-w-2xl mx-auto">
+          <div className="mb-6 text-7xl">🎉</div>
+          <h1 className="text-3xl font-bold mb-4 text-blue-600">
+            Înregistrare finalizată cu succes!
+          </h1>
+          <p className="text-xl mb-6 text-gray-600">
+            Vă mulțumim pentru înscriere la cursurile TechMinds Academy!
+          </p>
+          <div className="space-y-4 mb-8 text-left bg-blue-50 p-6 rounded-xl">
+            <h2 className="text-xl font-semibold text-blue-700">Următorii pași:</h2>
+            <ul className="space-y-2 text-gray-700">
+              <li className="flex items-center">
+                <span className="mr-2">📧</span>
+                Veți primi un email de confirmare în câteva minute
+              </li>
+              <li className="flex items-center">
+                <span className="mr-2">📄</span>
+                Contractul va fi generat și trimis pe email în maxim 24 de ore
+              </li>
+              <li className="flex items-center">
+                <span className="mr-2">📞</span>
+                Un reprezentant TechMinds vă va contacta în curând pentru detalii
+              </li>
+            </ul>
+          </div>
+          <button
+            onClick={() => setIsSubmitted(false)}
+            className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl
+                       hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg"
+          >
+            Înapoi la formular
+          </button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="max-w-4xl mx-auto">
-{/* Header cu logo și titlu - Versiune optimizată pentru tableta/mobil */}
-<div className="text-center mb-8 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 
-                text-white p-4 md:p-8 rounded-2xl shadow-2xl transform hover:scale-[1.02] 
-                transition-transform animate-gradient bg-[length:200%_200%] relative">
-  <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
-    {/* Logo */}
-    <div className="w-24 h-24 md:w-32 md:h-32 flex-shrink-0">
-      <Image
-        src="/images/logo.png"
-        alt="TechMinds Academy"
-        width={128}
-        height={128}
-        className="object-contain"
-      />
-    </div>
-    
-    {/* Text content */}
-    <div className="flex-1 text-center md:text-right">
-      {/* Formular text cu font diferit și dimensiune mai mică */}
-      <h1 className="text-sm md:text-lg font-normal mb-2 opacity-90 font-mono">
-        Formular înscriere TechMinds Academy
-      </h1>
-      
-      {/* Titlu principal centrat */}
-      <h2 className="text-2xl md:text-3xl font-bold mb-2">
-        Vino în lumea STEM! 🚀
-      </h2>
-      
-      {/* Subtitlu */}
-      <p className="text-base md:text-xl opacity-90">
-        Descoperă universul fascinant al roboticii și programării
-      </p>
-    </div>
-  </div>
-</div>
+      {/* Header cu logo și titlu - Versiune optimizată pentru tableta/mobil */}
+      <div className="text-center mb-8 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 
+                      text-white p-4 md:p-8 rounded-2xl shadow-2xl transform hover:scale-[1.02] 
+                      transition-transform animate-gradient bg-[length:200%_200%] relative">
+        <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+          {/* Logo */}
+          <div className="w-24 h-24 md:w-32 md:h-32 flex-shrink-0">
+            <Image
+              src="/images/logo.png"
+              alt="TechMinds Academy"
+              width={128}
+              height={128}
+              className="object-contain"
+            />
+          </div>
+          
+          {/* Text content */}
+          <div className="flex-1 text-center md:text-right">
+            {/* Formular text cu font diferit și dimensiune mai mică */}
+            <h1 className="text-sm md:text-lg font-normal mb-2 opacity-90 font-mono">
+              Formular înscriere TechMinds Academy
+            </h1>
+            
+            {/* Titlu principal centrat */}
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">
+              Vino în lumea STEM! 🚀
+            </h2>
+            
+            {/* Subtitlu */}
+            <p className="text-base md:text-xl opacity-90">
+              Descoperă universul fascinant al roboticii și programării
+            </p>
+          </div>
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Tot restul codului formularului rămâne neschimbat */}
         {/* Secțiunea Date Copil */}
         <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl shadow-lg
                         transform hover:shadow-xl transition-all">
@@ -141,6 +216,7 @@ export default function FormularInscriere() {
             </div>
           </div>
         </div>
+
         {/* Secțiunea Date Părinte */}
         <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-xl shadow-lg
                         transform hover:shadow-xl transition-all">
@@ -311,7 +387,7 @@ export default function FormularInscriere() {
             ))}
           </div>
         </div>
-
+        
         {/* Buton Submit */}
         <button
           type="submit"
