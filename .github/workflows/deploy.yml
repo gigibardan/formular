@@ -11,7 +11,6 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -22,13 +21,17 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build
         run: npm run build
+
+      - name: Copy index.html
+        run: cp index.html out/
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: out
           branch: gh-pages
+          clean: true
